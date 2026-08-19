@@ -96,7 +96,7 @@
       top: 64px;
       left: 0;
       width: 400%;
-      height: calc(100% - 64px);
+      height: calc(100% - 64px - 56px);
       display: flex;
       transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
       will-change: transform;
@@ -181,7 +181,7 @@
     /* PAGE 2 - PORTFOLIO */
     #page-portfolio {
       background: #05080f;
-      padding: 20px 16px 60px;
+      padding: 20px 16px 80px;
       color: white;
     }
     .portfolio-header {
@@ -588,14 +588,76 @@
     }
     .swipe-hint {
       position: fixed;
-      bottom: 16px;
+      bottom: 68px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 0.75rem;
-      opacity: 0.4;
+      opacity: 0.45;
       z-index: 50;
       pointer-events: none;
       color: #94a3b8;
+      transition: opacity 0.35s ease;
+    }
+    .swipe-hint.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* BOTTOM TAB BAR */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: #0a1424;
+      border-top: 1px solid rgba(74, 155, 224, 0.25);
+      display: flex;
+      align-items: stretch;
+      z-index: 1000;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+    }
+    .nav-tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-family: inherit;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s ease, background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      padding: 0;
+    }
+    .nav-tab:hover {
+      color: #94a3b8;
+      background: rgba(74, 155, 224, 0.06);
+    }
+    .nav-tab.active {
+      color: var(--accent);
+    }
+    .nav-tab .tab-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+      opacity: 0.85;
+    }
+    .nav-tab.active .tab-icon {
+      opacity: 1;
+    }
+    .nav-tab .tab-label {
+      line-height: 1;
+    }
+    @media (max-width: 380px) {
+      .nav-tab { font-size: 0.62rem; }
+      .nav-tab .tab-icon { font-size: 1.05rem; }
     }
 
     @media (max-width: 600px) {
@@ -745,6 +807,26 @@
   </div>
 
   <div class="swipe-hint" id="swipe-hint">← Swipe for Portfolio</div>
+
+  <!-- Bottom Tab Bar -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Main navigation">
+    <button class="nav-tab active" data-page="1" aria-label="Price Clock">
+      <span class="tab-icon">⏱</span>
+      <span class="tab-label">Clock</span>
+    </button>
+    <button class="nav-tab" data-page="2" aria-label="My Litecoin Portfolio">
+      <span class="tab-icon">💼</span>
+      <span class="tab-label">Portfolio</span>
+    </button>
+    <button class="nav-tab" data-page="3" aria-label="Network Metrics">
+      <span class="tab-icon">📊</span>
+      <span class="tab-label">Metrics</span>
+    </button>
+    <button class="nav-tab" data-page="4" aria-label="Watchlist">
+      <span class="tab-icon">👁</span>
+      <span class="tab-label">Watchlist</span>
+    </button>
+  </nav>
 
   <!-- Settings Modal -->
   <div class="modal-overlay" id="settings-modal">
@@ -903,18 +985,57 @@
     document.getElementById('arrow-left').onclick = () => { if (currentPage > 1) goToPage(currentPage - 1); };
     document.getElementById('arrow-right').onclick = () => { if (currentPage < 4) goToPage(currentPage + 1); };
 
+    // Bottom tab clicks
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const p = parseInt(tab.dataset.page);
+        if (p !== currentPage) goToPage(p);
+      });
+    });
+
+    // Keyboard support (Left / Right arrows)
+    document.addEventListener('keydown', e => {
+      // Ignore when typing in an input or textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowLeft' && currentPage > 1) {
+        e.preventDefault();
+        goToPage(currentPage - 1);
+      } else if (e.key === 'ArrowRight' && currentPage < 4) {
+        e.preventDefault();
+        goToPage(currentPage + 1);
+      }
+    });
+
     function goToPage(page) {
       currentPage = page;
       slider.className = 'page-' + page;
-      const hints = {
-        1: '← Swipe for Portfolio',
-        2: '← Metrics  |  Clock →',
-        3: '← Watchlist  |  Portfolio →',
-        4: 'Swipe for Clock →'
-      };
-      hint.textContent = hints[page];
+
+      // Update bottom tab active state
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', parseInt(tab.dataset.page) === page);
+      });
+
+      // Swipe hint logic: hide permanently once user has visited Portfolio (or after a few interactions)
+      const HINT_KEY = 'ltc_nav_hint_dismissed';
+      if (page === 2) {
+        localStorage.setItem(HINT_KEY, '1');
+      }
+      if (localStorage.getItem(HINT_KEY) === '1') {
+        hint.classList.add('hidden');
+      } else {
+        const hints = {
+          1: '← Swipe for Portfolio',
+          2: '← Metrics  |  Clock →',
+          3: '← Watchlist  |  Portfolio →',
+          4: 'Swipe for Clock →'
+        };
+        hint.textContent = hints[page];
+        hint.classList.remove('hidden');
+      }
+
       document.getElementById('arrow-left').style.opacity = page === 1 ? '0.3' : '1';
       document.getElementById('arrow-right').style.opacity = page === 4 ? '0.3' : '1';
+
       if (page === 2) {
         refreshBalances();
         if (!balanceChart) initChart();
@@ -1311,6 +1432,11 @@
     animate();
 
     document.getElementById('arrow-left').style.opacity = '0.3';
+
+    // Hide swipe hint on load if user has already visited Portfolio before
+    if (localStorage.getItem('ltc_nav_hint_dismissed') === '1') {
+      document.getElementById('swipe-hint').classList.add('hidden');
+    }
   </script>
 </body>
 </html>
