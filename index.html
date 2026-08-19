@@ -120,25 +120,40 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 10px 12px;
+      padding: 8px 10px;
       text-align: center;
       background: #000;
     }
     #price-container {
-      width: 94vw;
+      width: 96vw;
       max-width: 820px;
       z-index: 2;
       position: relative;
     }
     .price-line {
-      font-size: clamp(16px, 2.8vw + 0.5rem, 52px);
+      font-size: clamp(18px, 3.2vw + 0.6rem, 52px);
       font-weight: 800;
-      letter-spacing: 1px;
-      margin: 3px 0;
+      letter-spacing: 0.8px;
+      margin: 4px 0;
       color: var(--accent);
       text-transform: uppercase;
-      line-height: 1.15;
+      line-height: 1.18;
       white-space: nowrap;
+    }
+
+    /* Better mobile sizing */
+    @media (max-width: 600px) {
+      .price-line {
+        font-size: clamp(20px, 6.2vw, 32px);
+        margin: 5px 0;
+        letter-spacing: 0.5px;
+      }
+    }
+    @media (max-width: 400px) {
+      .price-line {
+        font-size: clamp(18px, 5.8vw, 28px);
+        margin: 4px 0;
+      }
     }
     @media (min-width: 1400px) {
       .price-line { font-size: clamp(28px, 2.4vw + 0.8rem, 56px); }
@@ -587,10 +602,6 @@
       .header img { height: 36px; }
       .header-nav { gap: 14px; }
       .header-nav a { font-size: 0.82rem; }
-      .price-line {
-        font-size: clamp(15px, 5vw, 26px);
-        margin: 2px 0;
-      }
       .coins-row { grid-template-columns: 1fr; }
     }
   </style>
@@ -946,13 +957,11 @@
       grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
 
       try {
-        // Prices
         const priceRes = await fetch(
           'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,dogecoin&vs_currencies=usd&include_24hr_change=true'
         );
         const prices = await priceRes.json();
 
-        // Charts one by one
         const coinIds = ['bitcoin', 'litecoin', 'dogecoin'];
         const chartMap = {};
 
@@ -967,7 +976,6 @@
           await new Promise(r => setTimeout(r, 400));
         }
 
-        // Render
         grid.innerHTML = '';
         WATCH_PAIRS.forEach((pair, idx) => {
           const card = document.createElement('div');
