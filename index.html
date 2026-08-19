@@ -9,13 +9,12 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Look Into Litecoin">
   <link rel="apple-touch-icon" href="favicon.png">
- 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800;900&display=swap');
-   
+  
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-   
+  
     :root {
       --navy: #0B2C5A;
       --navy-dark: #071E3D;
@@ -124,20 +123,24 @@
       position: relative;
     }
     .price-line {
-      font-size: clamp(17px, 3.2vw, 36px);
+      font-size: clamp(16px, 2.8vw + 0.5rem, 52px);
       font-weight: 800;
       letter-spacing: 1px;
-      margin: 2px 0;
+      margin: 3px 0;
       color: var(--accent);
       text-transform: uppercase;
       line-height: 1.15;
       white-space: nowrap;
     }
-    @media (min-width: 1000px) {
-      .price-line { font-size: 32px; margin: 3px 0; }
-    }
     @media (min-width: 1400px) {
-      .price-line { font-size: 34px; }
+      .price-line {
+        font-size: clamp(28px, 2.4vw + 0.8rem, 56px);
+      }
+    }
+    @media (min-width: 1800px) {
+      .price-line {
+        font-size: clamp(32px, 2.2vw + 1rem, 62px);
+      }
     }
     @media (hover: hover) and (pointer: fine) {
       .price-line:hover { color: #6bb3f0; }
@@ -425,7 +428,7 @@
       .header-nav { gap: 14px; }
       .header-nav a { font-size: 0.82rem; }
       .price-line {
-        font-size: clamp(15px, 5.2vw, 26px);
+        font-size: clamp(15px, 5vw, 26px);
         margin: 2px 0;
       }
     }
@@ -443,7 +446,7 @@
   <div class="nav-arrow left" id="arrow-left">‹</div>
   <div class="nav-arrow right" id="arrow-right">›</div>
   <div id="slider" class="page-1">
-   
+  
     <!-- PAGE 1 -->
     <div class="page" id="page-clock">
       <div id="price-container">
@@ -497,14 +500,14 @@
   <div class="modal-overlay" id="settings-modal">
     <div class="modal">
       <h2>Portfolio Settings</h2>
-     
+    
       <div class="form-group">
         <label>Portfolio Name</label>
         <input type="text" id="portfolio-name-input" placeholder="e.g. Cold Storage, Family Stack">
       </div>
       <hr style="border: none; border-top: 1px solid #1e3a5f; margin: 24px 0;">
       <h3 style="font-size: 1.1rem; margin-bottom: 14px; color: var(--accent);">Add Address</h3>
-     
+    
       <div class="form-group">
         <label>Label (optional)</label>
         <input type="text" id="addr-label" placeholder="e.g. Cold Storage, Exchange">
@@ -513,7 +516,7 @@
         <label>Litecoin Address</label>
         <input type="text" id="addr-input" placeholder="L... or M... or ltc1...">
       </div>
-     
+    
       <div class="modal-actions">
         <button class="btn btn-secondary" id="close-settings">Close</button>
         <button class="btn" id="save-address">Save Address</button>
@@ -526,7 +529,7 @@
     const STORAGE_KEY = 'ltc_watch_addresses';
     const NAME_KEY = 'ltc_portfolio_name';
     const HISTORY_KEY = 'ltc_balance_history';
-   
+  
     let addresses = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     let portfolioName = localStorage.getItem(NAME_KEY) || 'My Litecoin';
     let balanceHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
@@ -539,7 +542,7 @@
     // ========== CHART ==========
     function initChart() {
       const ctx = document.getElementById('balanceChart').getContext('2d');
-     
+    
       balanceChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -691,7 +694,7 @@
       currentPage = page;
       slider.className = page === 1 ? 'page-1' : 'page-2';
       hint.textContent = page === 1 ? '← Swipe for Portfolio' : 'Swipe for Clock →';
-     
+    
       document.getElementById('arrow-left').style.opacity = page === 1 ? '0.3' : '1';
       document.getElementById('arrow-right').style.opacity = page === 2 ? '0.3' : '1';
       if (page === 2) {
@@ -702,13 +705,13 @@
     }
     // ========== SETTINGS ==========
     const modal = document.getElementById('settings-modal');
-   
+  
     document.getElementById('open-settings').onclick = () => {
       document.getElementById('portfolio-name-input').value = portfolioName;
       renderSavedList();
       modal.classList.add('open');
     };
-   
+  
     document.getElementById('close-settings').onclick = () => {
       const newName = document.getElementById('portfolio-name-input').value.trim() || 'My Litecoin';
       portfolioName = newName;
@@ -776,7 +779,7 @@
       refreshBtn.disabled = true;
       refreshBtn.textContent = '…';
       const list = document.getElementById('address-list');
-     
+    
       if (addresses.length === 0) {
         list.innerHTML = `
           <div class="empty-state">
@@ -972,7 +975,7 @@
     createLogos();
     createPhrase();
     animate();
-   
+  
     document.getElementById('arrow-left').style.opacity = '0.3';
   </script>
 </body>
