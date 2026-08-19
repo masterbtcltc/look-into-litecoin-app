@@ -935,98 +935,108 @@
     }
 
     // ========== WATCHLIST (CoinGecko) ==========
-    async function loadWatchlist() {
-      const grid = document.getElementById('watchlist-grid');
-      grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
+async function loadWatchlist() {
+  const grid = document.getElementById('watchlist-grid');
+  grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
 
+  try {
+    // 1. Prices first
+    const priceRes = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,solana,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true'
+    );
+    const prices = await priceRes.json();
+
+    // 2. Load charts one by one with a small delay to avoid rate limits
+    const coinIds = ['bitcoin', 'litecoin', 'ethereum', 'solana', 'ripple', 'dogecoin'];
+    const chartMap = {};
+
+    for (const id of coinIds) {
       try {
-        const priceRes = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,solana,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true'
-        );
-        const prices = await priceRes.json();
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`);
+        const data = await res.json();
+        chartMap[id] = data.prices ? data.prices.map(p => p[1]) : [];
+      } catch (e) {
+        chartMap[id] = [];
+      }
+      // Small delay between requests
+      await new Promise(r => setTimeout(r, 350));
+    }
 
-        const coinIds = ['bitcoin','litecoin','ethereum','solana','ripple','dogecoin'];
-        const chartPromises = coinIds.map(id =>
-          fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`)
-            .then(r => r.json())
-            .then(d => ({ id, data: d.prices.map(p => p[1]) }))
-            .catch(() => ({ id, data: [] }))
-        );
-        const charts = await Promise.all(chartPromises);
-        const chartMap = Object.fromEntries(charts.map(c => [c.id, c.data]));
+    // 3. Render cards
+    grid.innerHTML = '';
+    WATCH_PAIRS.forEach((pair, idx) => {
+      const card = document.createElement('div');
+      card.className = 'watch-card';
 
-        grid.innerHTML = '';
-        WATCH_PAIRS.forEach((pair, idx) => {
-          const card = document.createElement('div');
-          card.className = 'watch-card';
+      let price = 0, change = 0, chartData = [];
 
-          let price = 0, change = 0, chartData = [];
+      if (pair.label === 'LTC-BTC') {
+        const ltc = prices.litecoin?.usd || 0;
+        const btc = prices.bitcoin?.usd || 0;
+        price = btc ? ltc / btc : 0;
+        change = prices.litecoin?.usd_24h_change || 0;
+        chartData = chartMap.litecoin || [];
+      } else {
+        const coin = prices[pair.id];
+        price = coin?.usd || 0;
+        change = coin?.usd_24h_change || 0;
+        chartData = chartMap[pair.id] || [];
+      }
 
-          if (pair.label === 'LTC-BTC') {
-            const ltc = prices.litecoin?.usd || 0;
-            const btc = prices.bitcoin?.usd || 0;
-            price = btc ? ltc / btc : 0;
-            change = prices.litecoin?.usd_24h_change || 0;
-            chartData = chartMap.litecoin || [];
-          } else {
-            const coin = prices[pair.id];
-            price = coin?.usd || 0;
-            change = coin?.usd_24h_change || 0;
-            chartData = chartMap[pair.id] || [];
-          }
+      const changeClass = change >= 0 ? 'up' : 'down';
+      const changeSign = change >= 0 ? '+' : '';
+      const priceStr = pair.label === 'LTC-BTC'
+        ? price.toFixed(6)
+        : (price < 1 ? price.toFixed(4) : price.toLocaleString(undefined, { maximumFractionDigits: 2 }));
 
-          const changeClass = change >= 0 ? 'up' : 'down';
-          const changeSign = change >= 0 ? '+' : '';
-          const priceStr = pair.label === 'LTC-BTC'
-            ? price.toFixed(6)
-            : (price < 1 ? price.toFixed(4) : price.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+      card.innerHTML = `
+        <div class="watch-card-header">
+          <div class="watch-symbol">${pair.label}</div>
+          <div>
+            <div class="watch-price">${pair.label === 'LTC-BTC' ? '' : '$'}${priceStr}</div>
+            <div class="watch-change ${changeClass}">${changeSign}${change.toFixed(2)}%</div>
+          </div>
+        </div>
+        <div class="watch-chart-wrap">
+          <canvas id="watch-chart-${idx}"></canvas>
+        </div>
+      `;
+      grid.appendChild(card);
 
-          card.innerHTML = `
-            <div class="watch-card-header">
-              <div class="watch-symbol">${pair.label}</div>
-              <div>
-                <div class="watch-price">${pair.label === 'LTC-BTC' ? '' : '$'}${priceStr}</div>
-                <div class="watch-change ${changeClass}">${changeSign}${change.toFixed(2)}%</div>
-              </div>
-            </div>
-            <div class="watch-chart-wrap">
-              <canvas id="watch-chart-${idx}"></canvas>
-            </div>
-          `;
-          grid.appendChild(card);
-
-          if (chartData.length > 2) {
-            const ctx = document.getElementById(`watch-chart-${idx}`).getContext('2d');
-            const color = change >= 0 ? '#4ade80' : '#f87171';
-            if (watchCharts[idx]) watchCharts[idx].destroy();
-            watchCharts[idx] = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: chartData.map((_, i) => i),
-                datasets: [{
-                  data: chartData,
-                  borderColor: color,
-                  backgroundColor: color + '22',
-                  borderWidth: 2,
-                  fill: true,
-                  tension: 0.3,
-                  pointRadius: 0
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: { x: { display: false }, y: { display: false } }
-              }
-            });
+      // Draw chart only if we have data
+      if (chartData.length > 5) {
+        const ctx = document.getElementById(`watch-chart-${idx}`).getContext('2d');
+        const color = change >= 0 ? '#4ade80' : '#f87171';
+        if (watchCharts[idx]) watchCharts[idx].destroy();
+        watchCharts[idx] = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartData.map((_, i) => i),
+            datasets: [{
+              data: chartData,
+              borderColor: color,
+              backgroundColor: color + '22',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: { x: { display: false }, y: { display: false } }
           }
         });
-      } catch (err) {
-        console.error(err);
-        grid.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171">Failed to load data. Try again in a minute.</div>';
       }
-    }
+    });
+
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171">Failed to load data. Try again in a minute.</div>';
+  }
+}
 
     document.getElementById('refresh-watchlist').onclick = () => loadWatchlist();
 
