@@ -779,15 +779,12 @@
 
     document.getElementById('portfolio-title').textContent = portfolioName;
 
-    // ========== WATCHLIST PAIRS ==========
+    // ========== WATCHLIST PAIRS (only 4) ==========
     const WATCH_PAIRS = [
       { id: 'litecoin',  label: 'LTC-USD' },
       { id: 'bitcoin',   label: 'BTC-USD' },
       { id: 'ltc-btc',   label: 'LTC-BTC' },
-      { id: 'solana',    label: 'SOL-USD' },
-      { id: 'ripple',    label: 'XRP-USD' },
-      { id: 'dogecoin',  label: 'DOGE-USD' },
-      { id: 'ethereum',  label: 'ETH-USD' }
+      { id: 'dogecoin',  label: 'DOGE-USD' }
     ];
 
     // ========== PORTFOLIO CHART ==========
@@ -949,14 +946,14 @@
       grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
 
       try {
-        // 1. Prices
+        // Prices
         const priceRes = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,solana,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true'
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,dogecoin&vs_currencies=usd&include_24hr_change=true'
         );
         const prices = await priceRes.json();
 
-        // 2. Charts one by one (to avoid rate limits)
-        const coinIds = ['bitcoin', 'litecoin', 'ethereum', 'solana', 'ripple', 'dogecoin'];
+        // Charts one by one
+        const coinIds = ['bitcoin', 'litecoin', 'dogecoin'];
         const chartMap = {};
 
         for (const id of coinIds) {
@@ -967,10 +964,10 @@
           } catch (e) {
             chartMap[id] = [];
           }
-          await new Promise(r => setTimeout(r, 350));
+          await new Promise(r => setTimeout(r, 400));
         }
 
-        // 3. Render
+        // Render
         grid.innerHTML = '';
         WATCH_PAIRS.forEach((pair, idx) => {
           const card = document.createElement('div');
