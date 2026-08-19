@@ -725,9 +725,7 @@
         <h1>Watchlist</h1>
         <button class="btn btn-secondary" id="refresh-watchlist" style="padding: 6px 12px;">↻</button>
       </div>
-      <div class="watchlist-grid" id="watchlist-grid">
-        <!-- Cards will be injected here -->
-      </div>
+      <div class="watchlist-grid" id="watchlist-grid"></div>
     </div>
   </div>
 
@@ -777,18 +775,18 @@
 
     document.getElementById('portfolio-title').textContent = portfolioName;
 
-    // ========== WATCHLIST PAIRS ==========
+    // ========== WATCHLIST PAIRS (CoinGecko) ==========
     const WATCH_PAIRS = [
-      { id: 'LTCUSDT', label: 'LTC-USD', isRatio: false },
-      { id: 'BTCUSDT', label: 'BTC-USD', isRatio: false },
-      { id: 'LTCBTC',  label: 'LTC-BTC', isRatio: true },
-      { id: 'SOLUSDT', label: 'SOL-USD', isRatio: false },
-      { id: 'XRPUSDT', label: 'XRP-USD', isRatio: false },
-      { id: 'DOGEUSDT',label: 'DOGE-USD', isRatio: false },
-      { id: 'ETHUSDT', label: 'ETH-USD', isRatio: false }
+      { id: 'litecoin',  label: 'LTC-USD' },
+      { id: 'bitcoin',   label: 'BTC-USD' },
+      { id: 'ltc-btc',   label: 'LTC-BTC' },
+      { id: 'solana',    label: 'SOL-USD' },
+      { id: 'ripple',    label: 'XRP-USD' },
+      { id: 'dogecoin',  label: 'DOGE-USD' },
+      { id: 'ethereum',  label: 'ETH-USD' }
     ];
 
-    // ========== CHART (Portfolio) ==========
+    // ========== PORTFOLIO CHART ==========
     function initChart() {
       const ctx = document.getElementById('balanceChart').getContext('2d');
       balanceChart = new Chart(ctx, {
@@ -859,7 +857,7 @@
       }
     };
 
-    // ========== NAVIGATION (4 pages) ==========
+    // ========== NAVIGATION ==========
     const slider = document.getElementById('slider');
     const hint = document.getElementById('swipe-hint');
     let startX = 0, startY = 0, isDragging = false;
@@ -891,7 +889,6 @@
     function goToPage(page) {
       currentPage = page;
       slider.className = 'page-' + page;
-
       const hints = {
         1: '← Swipe for Portfolio',
         2: '← Metrics  |  Clock →',
@@ -899,10 +896,8 @@
         4: 'Swipe for Clock →'
       };
       hint.textContent = hints[page];
-
       document.getElementById('arrow-left').style.opacity = page === 1 ? '0.3' : '1';
       document.getElementById('arrow-right').style.opacity = page === 4 ? '0.3' : '1';
-
       if (page === 2) {
         refreshBalances();
         if (!balanceChart) initChart();
@@ -918,25 +913,19 @@
         const res = await fetch('./metrics.json?t=' + Date.now());
         if (!res.ok) throw new Error('Failed');
         const data = await res.json();
-
         document.getElementById('btc-tx').textContent = data.btc.tx_24h.toLocaleString();
         document.getElementById('ltc-tx').textContent = data.ltc.tx_24h.toLocaleString();
         document.getElementById('doge-tx').textContent = data.doge.tx_24h.toLocaleString();
-
         document.getElementById('tx-ltc-btc').textContent = (data.ltc.tx_24h / data.btc.tx_24h * 100).toFixed(1) + '% of BTC';
         document.getElementById('tx-ltc-doge').textContent = (data.ltc.tx_24h / data.doge.tx_24h).toFixed(1) + '× DOGE';
-
         document.getElementById('btc-median').textContent = '$' + data.btc.median_usd.toFixed(2);
         document.getElementById('ltc-median').textContent = '$' + data.ltc.median_usd.toFixed(2);
         document.getElementById('doge-median').textContent = '$' + data.doge.median_usd.toFixed(2);
-
         const medPct = (data.ltc.median_usd / data.btc.median_usd * 100).toFixed(0);
         const medEl = document.getElementById('median-ltc-btc');
         medEl.textContent = medPct + '% of BTC' + (data.ltc.median_usd > data.btc.median_usd ? ' (higher)' : '');
         if (data.ltc.median_usd > data.btc.median_usd) medEl.classList.add('positive');
-
         document.getElementById('median-ltc-doge').textContent = (data.ltc.median_usd / data.doge.median_usd).toFixed(1) + '× DOGE';
-
         const updated = new Date(data.updated);
         document.getElementById('metrics-updated').textContent =
           'Updated ' + updated.toLocaleDateString() + ' ' + updated.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -945,121 +934,103 @@
       }
     }
 
-    // ========== WATCHLIST PAIRS ==========
-const WATCH_PAIRS = [
-  { id: 'litecoin',  label: 'LTC-USD' },
-  { id: 'bitcoin',   label: 'BTC-USD' },
-  { id: 'ltc-btc',   label: 'LTC-BTC' },   // special calculated pair
-  { id: 'solana',    label: 'SOL-USD' },
-  { id: 'ripple',    label: 'XRP-USD' },
-  { id: 'dogecoin',  label: 'DOGE-USD' },
-  { id: 'ethereum',  label: 'ETH-USD' }
-];
+    // ========== WATCHLIST (CoinGecko) ==========
+    async function loadWatchlist() {
+      const grid = document.getElementById('watchlist-grid');
+      grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
 
-// ========== WATCHLIST ==========
-async function loadWatchlist() {
-  const grid = document.getElementById('watchlist-grid');
-  grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
+      try {
+        const priceRes = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,solana,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true'
+        );
+        const prices = await priceRes.json();
 
-  try {
-    // Current prices + 24h change
-    const priceRes = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,litecoin,ethereum,solana,ripple,dogecoin&vs_currencies=usd&include_24hr_change=true'
-    );
-    const prices = await priceRes.json();
+        const coinIds = ['bitcoin','litecoin','ethereum','solana','ripple','dogecoin'];
+        const chartPromises = coinIds.map(id =>
+          fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`)
+            .then(r => r.json())
+            .then(d => ({ id, data: d.prices.map(p => p[1]) }))
+            .catch(() => ({ id, data: [] }))
+        );
+        const charts = await Promise.all(chartPromises);
+        const chartMap = Object.fromEntries(charts.map(c => [c.id, c.data]));
 
-    // 24h charts
-    const coinIds = ['bitcoin','litecoin','ethereum','solana','ripple','dogecoin'];
-    const chartPromises = coinIds.map(id =>
-      fetch(`https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=1`)
-        .then(r => r.json())
-        .then(d => ({ id, data: d.prices.map(p => p[1]) }))
-        .catch(() => ({ id, data: [] }))
-    );
-    const charts = await Promise.all(chartPromises);
-    const chartMap = Object.fromEntries(charts.map(c => [c.id, c.data]));
+        grid.innerHTML = '';
+        WATCH_PAIRS.forEach((pair, idx) => {
+          const card = document.createElement('div');
+          card.className = 'watch-card';
 
-    // Render cards
-    grid.innerHTML = '';
-    WATCH_PAIRS.forEach((pair, idx) => {
-      const card = document.createElement('div');
-      card.className = 'watch-card';
+          let price = 0, change = 0, chartData = [];
 
-      let price = 0;
-      let change = 0;
-      let chartData = [];
+          if (pair.label === 'LTC-BTC') {
+            const ltc = prices.litecoin?.usd || 0;
+            const btc = prices.bitcoin?.usd || 0;
+            price = btc ? ltc / btc : 0;
+            change = prices.litecoin?.usd_24h_change || 0;
+            chartData = chartMap.litecoin || [];
+          } else {
+            const coin = prices[pair.id];
+            price = coin?.usd || 0;
+            change = coin?.usd_24h_change || 0;
+            chartData = chartMap[pair.id] || [];
+          }
 
-      if (pair.label === 'LTC-BTC') {
-        const ltc = prices.litecoin?.usd || 0;
-        const btc = prices.bitcoin?.usd || 0;
-        price = btc ? ltc / btc : 0;
-        change = prices.litecoin?.usd_24h_change || 0;
-        chartData = chartMap.litecoin || [];
-      } else {
-        const coin = prices[pair.id];
-        price = coin?.usd || 0;
-        change = coin?.usd_24h_change || 0;
-        chartData = chartMap[pair.id] || [];
-      }
+          const changeClass = change >= 0 ? 'up' : 'down';
+          const changeSign = change >= 0 ? '+' : '';
+          const priceStr = pair.label === 'LTC-BTC'
+            ? price.toFixed(6)
+            : (price < 1 ? price.toFixed(4) : price.toLocaleString(undefined, { maximumFractionDigits: 2 }));
 
-      const changeClass = change >= 0 ? 'up' : 'down';
-      const changeSign = change >= 0 ? '+' : '';
-      const priceStr = pair.label === 'LTC-BTC'
-        ? price.toFixed(6)
-        : (price < 1 ? price.toFixed(4) : price.toLocaleString(undefined, { maximumFractionDigits: 2 }));
+          card.innerHTML = `
+            <div class="watch-card-header">
+              <div class="watch-symbol">${pair.label}</div>
+              <div>
+                <div class="watch-price">${pair.label === 'LTC-BTC' ? '' : '$'}${priceStr}</div>
+                <div class="watch-change ${changeClass}">${changeSign}${change.toFixed(2)}%</div>
+              </div>
+            </div>
+            <div class="watch-chart-wrap">
+              <canvas id="watch-chart-${idx}"></canvas>
+            </div>
+          `;
+          grid.appendChild(card);
 
-      card.innerHTML = `
-        <div class="watch-card-header">
-          <div class="watch-symbol">${pair.label}</div>
-          <div>
-            <div class="watch-price">${pair.label === 'LTC-BTC' ? '' : '$'}${priceStr}</div>
-            <div class="watch-change ${changeClass}">${changeSign}${change.toFixed(2)}%</div>
-          </div>
-        </div>
-        <div class="watch-chart-wrap">
-          <canvas id="watch-chart-${idx}"></canvas>
-        </div>
-      `;
-      grid.appendChild(card);
-
-      // Mini chart
-      if (chartData.length > 2) {
-        const ctx = document.getElementById(`watch-chart-${idx}`).getContext('2d');
-        const color = change >= 0 ? '#4ade80' : '#f87171';
-        if (watchCharts[idx]) watchCharts[idx].destroy();
-        watchCharts[idx] = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: chartData.map((_, i) => i),
-            datasets: [{
-              data: chartData,
-              borderColor: color,
-              backgroundColor: color + '22',
-              borderWidth: 2,
-              fill: true,
-              tension: 0.3,
-              pointRadius: 0
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            scales: { x: { display: false }, y: { display: false } }
+          if (chartData.length > 2) {
+            const ctx = document.getElementById(`watch-chart-${idx}`).getContext('2d');
+            const color = change >= 0 ? '#4ade80' : '#f87171';
+            if (watchCharts[idx]) watchCharts[idx].destroy();
+            watchCharts[idx] = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: chartData.map((_, i) => i),
+                datasets: [{
+                  data: chartData,
+                  borderColor: color,
+                  backgroundColor: color + '22',
+                  borderWidth: 2,
+                  fill: true,
+                  tension: 0.3,
+                  pointRadius: 0
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                scales: { x: { display: false }, y: { display: false } }
+              }
+            });
           }
         });
+      } catch (err) {
+        console.error(err);
+        grid.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171">Failed to load data. Try again in a minute.</div>';
       }
-    });
-
-  } catch (err) {
-    console.error(err);
-    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#f87171">Failed to load data. Try again in a minute.</div>';
-  }
-}
+    }
 
     document.getElementById('refresh-watchlist').onclick = () => loadWatchlist();
 
-    // ========== SETTINGS + PORTFOLIO (same as before) ==========
+    // ========== SETTINGS + PORTFOLIO ==========
     const modal = document.getElementById('settings-modal');
     document.getElementById('open-settings').onclick = () => {
       document.getElementById('portfolio-name-input').value = portfolioName;
