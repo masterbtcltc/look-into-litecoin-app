@@ -23,6 +23,8 @@
       --accent: #4A9BE0;
       --white: #ffffff;
       --text-muted: #94a3b8;
+      --green: #4ade80;
+      --red: #f87171;
     }
     html, body {
       height: 100%;
@@ -60,9 +62,7 @@
       text-transform: uppercase;
       transition: color 0.2s ease;
     }
-    .header-nav a:hover {
-      color: var(--ltc-blue-bright);
-    }
+    .header-nav a:hover { color: var(--ltc-blue-bright); }
     .nav-arrow {
       position: fixed;
       top: 50%;
@@ -87,22 +87,23 @@
     .nav-arrow.right { right: 18px; }
     @media (min-width: 768px) { .nav-arrow { display: flex; } }
 
-    /* 3-PAGE SLIDER */
+    /* 4-PAGE SLIDER */
     #slider {
       position: absolute;
       top: 64px;
       left: 0;
-      width: 300%;
+      width: 400%;
       height: calc(100% - 64px);
       display: flex;
       transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
       will-change: transform;
     }
     #slider.page-1 { transform: translateX(0); }
-    #slider.page-2 { transform: translateX(-33.333%); }
-    #slider.page-3 { transform: translateX(-66.666%); }
+    #slider.page-2 { transform: translateX(-25%); }
+    #slider.page-3 { transform: translateX(-50%); }
+    #slider.page-4 { transform: translateX(-75%); }
     .page {
-      width: 33.333%;
+      width: 25%;
       height: 100%;
       position: relative;
       overflow-y: auto;
@@ -249,11 +250,7 @@
       color: var(--accent);
       margin: 0;
     }
-    .chart-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+    .chart-controls { display: flex; gap: 8px; align-items: center; }
     .toggle-group {
       display: flex;
       background: #111827;
@@ -400,9 +397,7 @@
       border-color: var(--ltc-blue);
       background: rgba(46, 107, 158, 0.15);
     }
-    .coin-box.ltc-highlight .coin-name {
-      color: var(--accent);
-    }
+    .coin-box.ltc-highlight .coin-name { color: var(--accent); }
     .ratios {
       display: flex;
       flex-direction: column;
@@ -416,27 +411,82 @@
       border-radius: 10px;
       padding: 12px 16px;
     }
-    .ratio-label {
-      font-size: 0.9rem;
-      color: #94a3b8;
-    }
+    .ratio-label { font-size: 0.9rem; color: #94a3b8; }
     .ratio-value {
       font-size: 1.15rem;
       font-weight: 800;
       color: var(--accent);
     }
-    .ratio-value.positive {
-      color: #4ade80;
-    }
+    .ratio-value.positive { color: var(--green); }
     .source-note {
       text-align: center;
       font-size: 0.75rem;
       color: #64748b;
       margin-top: 16px;
     }
-    .source-note a {
+    .source-note a { color: var(--accent); text-decoration: none; }
+
+    /* PAGE 4 - WATCHLIST */
+    #page-watchlist {
+      background: #05080f;
+      padding: 20px 16px 80px;
+      color: white;
+    }
+    .watchlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .watchlist-header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
       color: var(--accent);
-      text-decoration: none;
+      margin: 0;
+    }
+    .watchlist-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .watch-card {
+      background: #0c1220;
+      border: 1px solid #1a2740;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .watch-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .watch-symbol {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+    }
+    .watch-price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-align: right;
+    }
+    .watch-change {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: right;
+      margin-top: 2px;
+    }
+    .watch-change.up { color: var(--green); }
+    .watch-change.down { color: var(--red); }
+    .watch-chart-wrap {
+      height: 80px;
+      position: relative;
+    }
+    .watch-chart-wrap canvas {
+      width: 100% !important;
+      height: 80px !important;
     }
 
     /* Modal */
@@ -537,9 +587,7 @@
         font-size: clamp(15px, 5vw, 26px);
         margin: 2px 0;
       }
-      .coins-row {
-        grid-template-columns: 1fr;
-      }
+      .coins-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -612,8 +660,6 @@
         <h1>Network Metrics</h1>
         <div class="metrics-updated" id="metrics-updated">Loading…</div>
       </div>
-
-      <!-- Transaction Count Section -->
       <div class="metric-section">
         <h2>24h Transaction Count</h2>
         <div class="coins-row">
@@ -641,8 +687,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Median Value Section -->
       <div class="metric-section">
         <h2>Median Transaction Value (USD)</h2>
         <div class="coins-row">
@@ -670,9 +714,19 @@
           </div>
         </div>
       </div>
-
       <div class="source-note">
         Data from <a href="https://bitinfocharts.com/" target="_blank">BitInfoCharts</a> • Updated daily
+      </div>
+    </div>
+
+    <!-- PAGE 4: WATCHLIST -->
+    <div class="page" id="page-watchlist">
+      <div class="watchlist-header">
+        <h1>Watchlist</h1>
+        <button class="btn btn-secondary" id="refresh-watchlist" style="padding: 6px 12px;">↻</button>
+      </div>
+      <div class="watchlist-grid" id="watchlist-grid">
+        <!-- Cards will be injected here -->
       </div>
     </div>
   </div>
@@ -719,10 +773,22 @@
     let isRefreshing = false;
     let balanceChart = null;
     let chartMode = 'ltc';
+    let watchCharts = {};
 
     document.getElementById('portfolio-title').textContent = portfolioName;
 
-    // ========== CHART ==========
+    // ========== WATCHLIST PAIRS ==========
+    const WATCH_PAIRS = [
+      { id: 'LTCUSDT', label: 'LTC-USD', isRatio: false },
+      { id: 'BTCUSDT', label: 'BTC-USD', isRatio: false },
+      { id: 'LTCBTC',  label: 'LTC-BTC', isRatio: true },
+      { id: 'SOLUSDT', label: 'SOL-USD', isRatio: false },
+      { id: 'XRPUSDT', label: 'XRP-USD', isRatio: false },
+      { id: 'DOGEUSDT',label: 'DOGE-USD', isRatio: false },
+      { id: 'ETHUSDT', label: 'ETH-USD', isRatio: false }
+    ];
+
+    // ========== CHART (Portfolio) ==========
     function initChart() {
       const ctx = document.getElementById('balanceChart').getContext('2d');
       balanceChart = new Chart(ctx, {
@@ -745,76 +811,34 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#0c1220',
-              titleColor: '#94a3b8',
-              bodyColor: '#e2eaf5',
-              borderColor: '#1e3a5f',
-              borderWidth: 1,
-              callbacks: {
-                label: function(context) {
-                  if (chartMode === 'ltc') {
-                    return context.parsed.y.toFixed(4) + ' LTC';
-                  } else {
-                    return '$' + context.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 2});
-                  }
-                }
-              }
-            }
-          },
+          plugins: { legend: { display: false } },
           scales: {
-            x: {
-              ticks: { color: '#64748b', maxTicksLimit: 6, font: { size: 11 } },
-              grid: { color: 'rgba(30, 58, 95, 0.4)' }
-            },
-            y: {
-              ticks: {
-                color: '#64748b',
-                font: { size: 11 },
-                callback: function(value) {
-                  if (chartMode === 'ltc') {
-                    return value.toFixed(2);
-                  } else {
-                    return '$' + value.toLocaleString(undefined, {maximumFractionDigits: 0});
-                  }
-                }
-              },
-              grid: { color: 'rgba(30, 58, 95, 0.4)' }
-            }
+            x: { ticks: { color: '#64748b', maxTicksLimit: 6, font: { size: 11 } }, grid: { color: 'rgba(30, 58, 95, 0.4)' } },
+            y: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: 'rgba(30, 58, 95, 0.4)' } }
           }
         }
       });
       updateChart();
     }
-
     function updateChart() {
       if (!balanceChart) return;
       const labels = balanceHistory.map(p => {
         const d = new Date(p.t);
-        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
-               ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
       });
       const data = balanceHistory.map(p => chartMode === 'ltc' ? p.balance : (p.usd || 0));
       balanceChart.data.labels = labels;
       balanceChart.data.datasets[0].data = data;
-      balanceChart.data.datasets[0].label = chartMode === 'ltc' ? 'LTC Balance' : 'USD Value';
       balanceChart.update();
     }
-
     function addHistoryPoint(balanceLtc, usdValue) {
       const now = Date.now();
-      if (balanceHistory.length > 0) {
-        const last = balanceHistory[balanceHistory.length - 1];
-        if (now - last.t < 2 * 60 * 1000) return;
-      }
+      if (balanceHistory.length > 0 && now - balanceHistory[balanceHistory.length - 1].t < 2 * 60 * 1000) return;
       balanceHistory.push({ t: now, balance: balanceLtc, usd: usdValue || 0 });
       if (balanceHistory.length > 40) balanceHistory = balanceHistory.slice(-40);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(balanceHistory));
       updateChart();
     }
-
     document.getElementById('toggle-ltc').onclick = () => {
       chartMode = 'ltc';
       document.getElementById('toggle-ltc').classList.add('active');
@@ -835,7 +859,7 @@
       }
     };
 
-    // ========== NAVIGATION (3 pages) ==========
+    // ========== NAVIGATION (4 pages) ==========
     const slider = document.getElementById('slider');
     const hint = document.getElementById('swipe-hint');
     let startX = 0, startY = 0, isDragging = false;
@@ -845,106 +869,178 @@
       startY = e.touches[0].clientY;
       isDragging = true;
     }, { passive: true });
-
     document.addEventListener('touchmove', e => {
       if (!isDragging) return;
       const dx = e.touches[0].clientX - startX;
       const dy = e.touches[0].clientY - startY;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) e.preventDefault();
     }, { passive: false });
-
     document.addEventListener('touchend', e => {
       if (!isDragging) return;
       isDragging = false;
       const dx = e.changedTouches[0].clientX - startX;
       const dy = e.changedTouches[0].clientY - startY;
       if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
-      if (dx < 0 && currentPage < 3) goToPage(currentPage + 1);
+      if (dx < 0 && currentPage < 4) goToPage(currentPage + 1);
       else if (dx > 0 && currentPage > 1) goToPage(currentPage - 1);
     });
 
-    document.getElementById('arrow-left').onclick = () => {
-      if (currentPage > 1) goToPage(currentPage - 1);
-    };
-    document.getElementById('arrow-right').onclick = () => {
-      if (currentPage < 3) goToPage(currentPage + 1);
-    };
+    document.getElementById('arrow-left').onclick = () => { if (currentPage > 1) goToPage(currentPage - 1); };
+    document.getElementById('arrow-right').onclick = () => { if (currentPage < 4) goToPage(currentPage + 1); };
 
     function goToPage(page) {
       currentPage = page;
       slider.className = 'page-' + page;
 
-      if (page === 1) hint.textContent = '← Swipe for Portfolio';
-      else if (page === 2) hint.textContent = '← Metrics  |  Clock →';
-      else hint.textContent = 'Swipe for Clock →';
+      const hints = {
+        1: '← Swipe for Portfolio',
+        2: '← Metrics  |  Clock →',
+        3: '← Watchlist  |  Portfolio →',
+        4: 'Swipe for Clock →'
+      };
+      hint.textContent = hints[page];
 
       document.getElementById('arrow-left').style.opacity = page === 1 ? '0.3' : '1';
-      document.getElementById('arrow-right').style.opacity = page === 3 ? '0.3' : '1';
+      document.getElementById('arrow-right').style.opacity = page === 4 ? '0.3' : '1';
 
       if (page === 2) {
         refreshBalances();
         if (!balanceChart) initChart();
         else updateChart();
       }
-      if (page === 3) {
-        loadMetrics();
-      }
+      if (page === 3) loadMetrics();
+      if (page === 4) loadWatchlist();
     }
 
     // ========== NETWORK METRICS ==========
     async function loadMetrics() {
       try {
         const res = await fetch('./metrics.json?t=' + Date.now());
-        if (!res.ok) throw new Error('Failed to load');
+        if (!res.ok) throw new Error('Failed');
         const data = await res.json();
 
-        // Transaction counts
         document.getElementById('btc-tx').textContent = data.btc.tx_24h.toLocaleString();
         document.getElementById('ltc-tx').textContent = data.ltc.tx_24h.toLocaleString();
         document.getElementById('doge-tx').textContent = data.doge.tx_24h.toLocaleString();
 
-        const txLtcBtc = (data.ltc.tx_24h / data.btc.tx_24h * 100).toFixed(1);
-        const txLtcDoge = (data.ltc.tx_24h / data.doge.tx_24h).toFixed(1);
-        document.getElementById('tx-ltc-btc').textContent = txLtcBtc + '% of BTC';
-        document.getElementById('tx-ltc-doge').textContent = txLtcDoge + '× DOGE';
+        document.getElementById('tx-ltc-btc').textContent = (data.ltc.tx_24h / data.btc.tx_24h * 100).toFixed(1) + '% of BTC';
+        document.getElementById('tx-ltc-doge').textContent = (data.ltc.tx_24h / data.doge.tx_24h).toFixed(1) + '× DOGE';
 
-        // Median values
         document.getElementById('btc-median').textContent = '$' + data.btc.median_usd.toFixed(2);
         document.getElementById('ltc-median').textContent = '$' + data.ltc.median_usd.toFixed(2);
         document.getElementById('doge-median').textContent = '$' + data.doge.median_usd.toFixed(2);
 
-        const medLtcBtc = (data.ltc.median_usd / data.btc.median_usd * 100).toFixed(0);
-        const medLtcDoge = (data.ltc.median_usd / data.doge.median_usd).toFixed(1);
+        const medPct = (data.ltc.median_usd / data.btc.median_usd * 100).toFixed(0);
+        const medEl = document.getElementById('median-ltc-btc');
+        medEl.textContent = medPct + '% of BTC' + (data.ltc.median_usd > data.btc.median_usd ? ' (higher)' : '');
+        if (data.ltc.median_usd > data.btc.median_usd) medEl.classList.add('positive');
 
-        const medBtcEl = document.getElementById('median-ltc-btc');
-        medBtcEl.textContent = medLtcBtc + '% of BTC';
-        if (data.ltc.median_usd > data.btc.median_usd) {
-          medBtcEl.classList.add('positive');
-          medBtcEl.textContent = medLtcBtc + '% of BTC (higher)';
-        }
+        document.getElementById('median-ltc-doge').textContent = (data.ltc.median_usd / data.doge.median_usd).toFixed(1) + '× DOGE';
 
-        document.getElementById('median-ltc-doge').textContent = medLtcDoge + '× DOGE';
-
-        // Updated time
         const updated = new Date(data.updated);
         document.getElementById('metrics-updated').textContent =
-          'Updated ' + updated.toLocaleDateString() + ' ' + updated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
+          'Updated ' + updated.toLocaleDateString() + ' ' + updated.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       } catch (err) {
-        console.error(err);
         document.getElementById('metrics-updated').textContent = 'Failed to load metrics';
       }
     }
 
-    // ========== SETTINGS ==========
+    // ========== WATCHLIST ==========
+    async function loadWatchlist() {
+      const grid = document.getElementById('watchlist-grid');
+      grid.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8">Loading…</div>';
+
+      const results = [];
+      for (const pair of WATCH_PAIRS) {
+        try {
+          const [tickerRes, klineRes] = await Promise.all([
+            fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${pair.id}`),
+            fetch(`https://api.binance.com/api/v3/klines?symbol=${pair.id}&interval=1h&limit=24`)
+          ]);
+          const ticker = await tickerRes.json();
+          const klines = await klineRes.json();
+
+          const price = parseFloat(ticker.lastPrice);
+          const change = parseFloat(ticker.priceChangePercent);
+          const prices = klines.map(k => parseFloat(k[4])); // close prices
+
+          results.push({ ...pair, price, change, prices });
+        } catch (e) {
+          results.push({ ...pair, error: true });
+        }
+      }
+
+      grid.innerHTML = '';
+      results.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'watch-card';
+
+        if (item.error) {
+          card.innerHTML = `<div class="watch-symbol">${item.label}</div><div style="color:#94a3b8">Error loading</div>`;
+          grid.appendChild(card);
+          return;
+        }
+
+        const changeClass = item.change >= 0 ? 'up' : 'down';
+        const changeSign = item.change >= 0 ? '+' : '';
+        const priceStr = item.isRatio 
+          ? item.price.toFixed(6) 
+          : (item.price < 1 ? item.price.toFixed(4) : item.price.toLocaleString(undefined, {maximumFractionDigits: 2}));
+
+        card.innerHTML = `
+          <div class="watch-card-header">
+            <div class="watch-symbol">${item.label}</div>
+            <div>
+              <div class="watch-price">${item.isRatio ? '' : '$'}${priceStr}</div>
+              <div class="watch-change ${changeClass}">${changeSign}${item.change.toFixed(2)}%</div>
+            </div>
+          </div>
+          <div class="watch-chart-wrap">
+            <canvas id="watch-chart-${idx}"></canvas>
+          </div>
+        `;
+        grid.appendChild(card);
+
+        // Mini chart
+        const ctx = document.getElementById(`watch-chart-${idx}`).getContext('2d');
+        const color = item.change >= 0 ? '#4ade80' : '#f87171';
+        if (watchCharts[idx]) watchCharts[idx].destroy();
+        watchCharts[idx] = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: item.prices.map((_, i) => i),
+            datasets: [{
+              data: item.prices,
+              borderColor: color,
+              backgroundColor: color + '22',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: {
+              x: { display: false },
+              y: { display: false }
+            }
+          }
+        });
+      });
+    }
+
+    document.getElementById('refresh-watchlist').onclick = () => loadWatchlist();
+
+    // ========== SETTINGS + PORTFOLIO (same as before) ==========
     const modal = document.getElementById('settings-modal');
-  
     document.getElementById('open-settings').onclick = () => {
       document.getElementById('portfolio-name-input').value = portfolioName;
       renderSavedList();
       modal.classList.add('open');
     };
-  
     document.getElementById('close-settings').onclick = () => {
       const newName = document.getElementById('portfolio-name-input').value.trim() || 'My Litecoin';
       portfolioName = newName;
@@ -952,15 +1048,12 @@
       document.getElementById('portfolio-title').textContent = newName;
       modal.classList.remove('open');
     };
-
     document.getElementById('save-address').onclick = () => {
       const label = document.getElementById('addr-label').value.trim() || 'Address';
       const addr = document.getElementById('addr-input').value.trim();
       if (!addr) return alert('Please enter an address');
       if (!isValidLtcAddress(addr)) return alert('That does not look like a valid Litecoin address');
-      if (addresses.some(a => a.address.toLowerCase() === addr.toLowerCase())) {
-        return alert('This address is already saved');
-      }
+      if (addresses.some(a => a.address.toLowerCase() === addr.toLowerCase())) return alert('This address is already saved');
       addresses.push({ label, address: addr });
       saveAddresses();
       document.getElementById('addr-label').value = '';
@@ -968,14 +1061,10 @@
       renderSavedList();
       refreshBalances();
     };
-
     function isValidLtcAddress(addr) {
-      return /^(L|M)[a-km-zA-HJ-NP-Z1-9]{26,33}$/.test(addr) ||
-             /^ltc1[a-z0-9]{39,59}$/i.test(addr);
+      return /^(L|M)[a-km-zA-HJ-NP-Z1-9]{26,33}$/.test(addr) || /^ltc1[a-z0-9]{39,59}$/i.test(addr);
     }
-    function saveAddresses() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses));
-    }
+    function saveAddresses() { localStorage.setItem(STORAGE_KEY, JSON.stringify(addresses)); }
     function renderSavedList() {
       const container = document.getElementById('saved-list');
       if (addresses.length === 0) {
@@ -1004,11 +1093,7 @@
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    // ========== REFRESH ==========
-    document.getElementById('refresh-btn').onclick = () => {
-      if (!isRefreshing) refreshBalances(true);
-    };
-
+    document.getElementById('refresh-btn').onclick = () => { if (!isRefreshing) refreshBalances(true); };
     async function refreshBalances(manual = false) {
       if (isRefreshing) return;
       isRefreshing = true;
@@ -1016,23 +1101,14 @@
       refreshBtn.disabled = true;
       refreshBtn.textContent = '…';
       const list = document.getElementById('address-list');
-    
       if (addresses.length === 0) {
-        list.innerHTML = `
-          <div class="empty-state">
-            <p>No addresses added yet</p>
-            <button class="btn" onclick="document.getElementById('open-settings').click()">
-              Add your first address
-            </button>
-          </div>`;
+        list.innerHTML = `<div class="empty-state"><p>No addresses added yet</p><button class="btn" onclick="document.getElementById('open-settings').click()">Add your first address</button></div>`;
         document.getElementById('total-ltc').textContent = '0.00 LTC';
         document.getElementById('total-usd').textContent = '≈ $0.00';
         finishRefresh();
         return;
       }
-      if (manual) {
-        list.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.6;color:#94a3b8">Refreshing…</div>';
-      }
+      if (manual) list.innerHTML = '<div style="text-align:center;padding:40px;opacity:0.6;color:#94a3b8">Refreshing…</div>';
       let totalSats = 0;
       const results = [];
       for (const item of addresses) {
@@ -1040,9 +1116,8 @@
           const res = await fetch(`https://api.blockcypher.com/v1/ltc/main/addrs/${item.address}/balance`);
           if (!res.ok) throw new Error('API error');
           const data = await res.json();
-          const balance = data.balance || 0;
-          results.push({ ...item, balance });
-          totalSats += balance;
+          results.push({ ...item, balance: data.balance || 0 });
+          totalSats += data.balance || 0;
         } catch (err) {
           results.push({ ...item, balance: null, error: true });
         }
@@ -1062,28 +1137,18 @@
       const totalLtc = totalSats / 1e8;
       const totalUsd = totalLtc * (ltcPriceUsd || 0);
       document.getElementById('total-ltc').textContent = totalLtc.toLocaleString(undefined, {maximumFractionDigits: 8}) + ' LTC';
-      document.getElementById('total-usd').textContent = ltcPriceUsd
-        ? `≈ $${totalUsd.toLocaleString(undefined, {maximumFractionDigits: 2})}`
-        : '≈ $—';
+      document.getElementById('total-usd').textContent = ltcPriceUsd ? `≈ $${totalUsd.toLocaleString(undefined, {maximumFractionDigits: 2})}` : '≈ $—';
       addHistoryPoint(totalLtc, totalUsd);
       list.innerHTML = results.map(r => {
         const bal = r.balance === null ? 'Error' : (r.balance / 1e8).toLocaleString(undefined, {maximumFractionDigits: 8});
-        return `
-          <div class="address-card">
-            <div class="address-info">
-              <div class="address-label">${escapeHtml(r.label)}</div>
-              <div class="address-text">${r.address}</div>
-            </div>
-            <div class="address-balance">${bal} LTC</div>
-          </div>`;
+        return `<div class="address-card"><div class="address-info"><div class="address-label">${escapeHtml(r.label)}</div><div class="address-text">${r.address}</div></div><div class="address-balance">${bal} LTC</div></div>`;
       }).join('');
       finishRefresh();
     }
     function finishRefresh() {
       isRefreshing = false;
-      const refreshBtn = document.getElementById('refresh-btn');
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = '↻';
+      document.getElementById('refresh-btn').disabled = false;
+      document.getElementById('refresh-btn').textContent = '↻';
     }
 
     // ========== FLOATING LOGOS ==========
@@ -1132,7 +1197,6 @@
     ];
     function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
     let phraseObj = null;
-
     function createLogos() {
       for (let i = 0; i < NUM_LOGOS; i++) {
         const img = document.createElement('img');
@@ -1164,8 +1228,7 @@
       if (!phraseObj) return;
       const el = phraseObj.el;
       el.textContent = randomFrom(phrases);
-      const fontSize = 16 + Math.random() * 22;
-      el.style.fontSize = fontSize + 'px';
+      el.style.fontSize = (16 + Math.random() * 22) + 'px';
       const w = window.innerWidth, h = window.innerHeight - 80;
       const pw = el.offsetWidth || 200, ph = el.offsetHeight || 60;
       phraseObj.x = Math.random() * Math.max(10, w - pw - 20);
