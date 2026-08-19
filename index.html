@@ -133,7 +133,6 @@
       line-height: 1.18;
       white-space: nowrap;
     }
-    /* Better mobile sizing */
     @media (max-width: 600px) {
       .price-line {
         font-size: clamp(20px, 6.2vw, 32px);
@@ -169,7 +168,170 @@
       line-height: 1.3;
     }
     .ltc-logo { position: absolute; opacity: 0.04; z-index: 1; pointer-events: none; }
-    /* PAGE 2 - PORTFOLIO */
+    /* PAGE 2 - WATCHLIST (was Portfolio) */
+    #page-watchlist {
+      background: #05080f;
+      padding: 20px 16px 80px;
+      color: white;
+    }
+    .watchlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .watchlist-header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0;
+    }
+    .watchlist-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    @media (min-width: 640px) {
+      .watchlist-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .watch-card {
+      background: #0c1220;
+      border: 1px solid #1a2740;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .watch-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .watch-symbol {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: white;
+    }
+    .watch-price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-align: right;
+    }
+    .watch-change {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: right;
+      margin-top: 2px;
+    }
+    .watch-change.up { color: var(--green); }
+    .watch-change.down { color: var(--red); }
+    .watch-chart-wrap {
+      height: 70px;
+      position: relative;
+    }
+    .watch-chart-wrap canvas {
+      width: 100% !important;
+      height: 70px !important;
+    }
+    /* PAGE 3 - NETWORK METRICS */
+    #page-metrics {
+      background: #05080f;
+      padding: 20px 16px 80px;
+      color: white;
+    }
+    .metrics-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .metrics-header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0;
+    }
+    .metrics-updated {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+    .metric-section {
+      background: #0c1220;
+      border: 1px solid #1a2740;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .metric-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .coins-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .coin-box {
+      background: #111827;
+      border: 1px solid #1e3a5f;
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .coin-box .coin-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .coin-box .coin-value {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+    }
+    .coin-box.ltc-highlight {
+      border-color: var(--ltc-blue);
+      background: rgba(46, 107, 158, 0.15);
+    }
+    .coin-box.ltc-highlight .coin-name { color: var(--accent); }
+    .ratios {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ratio-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #0a101c;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+    .ratio-label { font-size: 0.9rem; color: #94a3b8; }
+    .ratio-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .ratio-value.positive { color: var(--green); }
+    .source-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 16px;
+    }
+    .source-note a { color: var(--accent); text-decoration: none; }
+    /* PAGE 4 - PORTFOLIO (was Watchlist) */
     #page-portfolio {
       background: #05080f;
       padding: 20px 16px 80px;
@@ -339,169 +501,6 @@
       color: #94a3b8;
     }
     .empty-state p { margin-bottom: 20px; }
-    /* PAGE 3 - NETWORK METRICS */
-    #page-metrics {
-      background: #05080f;
-      padding: 20px 16px 80px;
-      color: white;
-    }
-    .metrics-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .metrics-header h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin: 0;
-    }
-    .metrics-updated {
-      font-size: 0.8rem;
-      color: #64748b;
-    }
-    .metric-section {
-      background: #0c1220;
-      border: 1px solid #1a2740;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .metric-section h2 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 18px;
-    }
-    .coins-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .coin-box {
-      background: #111827;
-      border: 1px solid #1e3a5f;
-      border-radius: 12px;
-      padding: 14px 10px;
-      text-align: center;
-    }
-    .coin-box .coin-name {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    .coin-box .coin-value {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: white;
-    }
-    .coin-box.ltc-highlight {
-      border-color: var(--ltc-blue);
-      background: rgba(46, 107, 158, 0.15);
-    }
-    .coin-box.ltc-highlight .coin-name { color: var(--accent); }
-    .ratios {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .ratio-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #0a101c;
-      border-radius: 10px;
-      padding: 12px 16px;
-    }
-    .ratio-label { font-size: 0.9rem; color: #94a3b8; }
-    .ratio-value {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    .ratio-value.positive { color: var(--green); }
-    .source-note {
-      text-align: center;
-      font-size: 0.75rem;
-      color: #64748b;
-      margin-top: 16px;
-    }
-    .source-note a { color: var(--accent); text-decoration: none; }
-    /* PAGE 4 - WATCHLIST */
-    #page-watchlist {
-      background: #05080f;
-      padding: 20px 16px 80px;
-      color: white;
-    }
-    .watchlist-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .watchlist-header h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin: 0;
-    }
-    .watchlist-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      max-width: 920px;
-      margin: 0 auto;
-    }
-    @media (min-width: 640px) {
-      .watchlist-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .watch-card {
-      background: #0c1220;
-      border: 1px solid #1a2740;
-      border-radius: 14px;
-      padding: 16px;
-    }
-    .watch-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-    .watch-symbol {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: white;
-    }
-    .watch-price {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--accent);
-      text-align: right;
-    }
-    .watch-change {
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-align: right;
-      margin-top: 2px;
-    }
-    .watch-change.up { color: var(--green); }
-    .watch-change.down { color: var(--red); }
-    .watch-chart-wrap {
-      height: 70px;
-      position: relative;
-    }
-    .watch-chart-wrap canvas {
-      width: 100% !important;
-      height: 70px !important;
-    }
     /* Modal */
     .modal-overlay {
       position: fixed;
@@ -688,36 +687,13 @@
         <div id="ltc-doge-ratio" class="price-line">LTCDOGE</div>
       </div>
     </div>
-    <!-- PAGE 2: PORTFOLIO -->
-    <div class="page" id="page-portfolio">
-      <div class="portfolio-header">
-        <h1 id="portfolio-title">My Litecoin</h1>
-        <div class="header-buttons">
-          <button class="btn btn-secondary" id="refresh-btn">↻</button>
-          <button class="btn" id="open-settings">+ Addresses</button>
-        </div>
+    <!-- PAGE 2: WATCHLIST -->
+    <div class="page" id="page-watchlist">
+      <div class="watchlist-header">
+        <h1>Watchlist</h1>
+        <button class="btn btn-secondary" id="refresh-watchlist" style="padding: 6px 12px;">↻</button>
       </div>
-      <div class="total-balance">
-        <div class="label">Total Balance</div>
-        <div class="amount" id="total-ltc">—</div>
-        <div class="usd" id="total-usd">≈ $—</div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-header">
-          <h3>Balance Over Time</h3>
-          <div class="chart-controls">
-            <div class="toggle-group">
-              <button class="toggle-btn active" id="toggle-ltc">LTC</button>
-              <button class="toggle-btn" id="toggle-usd">USD</button>
-            </div>
-            <div class="chart-actions">
-              <button id="clear-history">Clear</button>
-            </div>
-          </div>
-        </div>
-        <canvas id="balanceChart" height="180"></canvas>
-      </div>
-      <div class="address-list" id="address-list"></div>
+      <div class="watchlist-grid" id="watchlist-grid"></div>
     </div>
     <!-- PAGE 3: NETWORK METRICS -->
     <div class="page" id="page-metrics">
@@ -783,33 +759,56 @@
         Data from <a href="https://bitinfocharts.com/" target="_blank">BitInfoCharts</a> • Updated daily
       </div>
     </div>
-    <!-- PAGE 4: WATCHLIST -->
-    <div class="page" id="page-watchlist">
-      <div class="watchlist-header">
-        <h1>Watchlist</h1>
-        <button class="btn btn-secondary" id="refresh-watchlist" style="padding: 6px 12px;">↻</button>
+    <!-- PAGE 4: PORTFOLIO -->
+    <div class="page" id="page-portfolio">
+      <div class="portfolio-header">
+        <h1 id="portfolio-title">My Litecoin</h1>
+        <div class="header-buttons">
+          <button class="btn btn-secondary" id="refresh-btn">↻</button>
+          <button class="btn" id="open-settings">+ Addresses</button>
+        </div>
       </div>
-      <div class="watchlist-grid" id="watchlist-grid"></div>
+      <div class="total-balance">
+        <div class="label">Total Balance</div>
+        <div class="amount" id="total-ltc">—</div>
+        <div class="usd" id="total-usd">≈ $—</div>
+      </div>
+      <div class="chart-container">
+        <div class="chart-header">
+          <h3>Balance Over Time</h3>
+          <div class="chart-controls">
+            <div class="toggle-group">
+              <button class="toggle-btn active" id="toggle-ltc">LTC</button>
+              <button class="toggle-btn" id="toggle-usd">USD</button>
+            </div>
+            <div class="chart-actions">
+              <button id="clear-history">Clear</button>
+            </div>
+          </div>
+        </div>
+        <canvas id="balanceChart" height="180"></canvas>
+      </div>
+      <div class="address-list" id="address-list"></div>
     </div>
   </div>
-  <div class="swipe-hint" id="swipe-hint">← Swipe for Portfolio</div>
+  <div class="swipe-hint" id="swipe-hint">← Swipe for Watchlist</div>
   <!-- Bottom Tab Bar -->
   <nav class="bottom-nav" id="bottom-nav" aria-label="Main navigation">
     <button class="nav-tab active" data-page="1" aria-label="Price Clock">
       <span class="tab-icon">⏱</span>
       <span class="tab-label">Clock</span>
     </button>
-    <button class="nav-tab" data-page="2" aria-label="My Litecoin Portfolio">
-      <span class="tab-icon">💼</span>
-      <span class="tab-label">Portfolio</span>
+    <button class="nav-tab" data-page="2" aria-label="Watchlist">
+      <span class="tab-icon">👁</span>
+      <span class="tab-label">Watchlist</span>
     </button>
     <button class="nav-tab" data-page="3" aria-label="Network Metrics">
       <span class="tab-icon">📊</span>
       <span class="tab-label">Metrics</span>
     </button>
-    <button class="nav-tab" data-page="4" aria-label="Watchlist">
-      <span class="tab-icon">👁</span>
-      <span class="tab-label">Watchlist</span>
+    <button class="nav-tab" data-page="4" aria-label="My Litecoin Portfolio">
+      <span class="tab-icon">💼</span>
+      <span class="tab-label">Portfolio</span>
     </button>
   </nav>
   <!-- Settings Modal -->
@@ -964,7 +963,6 @@
     });
     // Keyboard support (Left / Right arrows)
     document.addEventListener('keydown', e => {
-      // Ignore when typing in an input or textarea
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowLeft' && currentPage > 1) {
         e.preventDefault();
@@ -981,18 +979,18 @@
       document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.toggle('active', parseInt(tab.dataset.page) === page);
       });
-      // Swipe hint logic: hide permanently once user has visited Portfolio (or after a few interactions)
+      // Swipe hint logic
       const HINT_KEY = 'ltc_nav_hint_dismissed';
-      if (page === 2) {
+      if (page === 2 || page === 4) {
         localStorage.setItem(HINT_KEY, '1');
       }
       if (localStorage.getItem(HINT_KEY) === '1') {
         hint.classList.add('hidden');
       } else {
         const hints = {
-          1: '← Swipe for Portfolio',
+          1: '← Swipe for Watchlist',
           2: '← Metrics | Clock →',
-          3: '← Watchlist | Portfolio →',
+          3: '← Portfolio | Watchlist →',
           4: 'Swipe for Clock →'
         };
         hint.textContent = hints[page];
@@ -1000,13 +998,13 @@
       }
       document.getElementById('arrow-left').style.opacity = page === 1 ? '0.3' : '1';
       document.getElementById('arrow-right').style.opacity = page === 4 ? '0.3' : '1';
-      if (page === 2) {
+      if (page === 2) loadWatchlist();
+      if (page === 3) loadMetrics();
+      if (page === 4) {
         refreshBalances();
         if (!balanceChart) initChart();
         else updateChart();
       }
-      if (page === 3) loadMetrics();
-      if (page === 4) loadWatchlist();
     }
     // ========== NETWORK METRICS ==========
     async function loadMetrics() {
@@ -1238,88 +1236,8 @@
       document.getElementById('refresh-btn').disabled = false;
       document.getElementById('refresh-btn').textContent = '↻';
     }
-    function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-    let phraseObj = null;
-    function createLogos() {
-      for (let i = 0; i < NUM_LOGOS; i++) {
-        const img = document.createElement('img');
-        img.src = LOGO_SRC;
-        img.className = 'ltc-logo';
-        const size = 70 + Math.random() * 160;
-        img.style.width = size + 'px';
-        document.getElementById('page-clock').appendChild(img);
-        logos.push({
-          el: img,
-          x: Math.random() * (window.innerWidth - size),
-          y: Math.random() * (window.innerHeight - size - 80),
-          vx: (Math.random() * 1.3 + 0.3) * (Math.random() < 0.5 ? 1 : -1),
-          vy: (Math.random() * 1.3 + 0.3) * (Math.random() < 0.5 ? 1 : -1),
-          phase: Math.random() * Math.PI * 2,
-          opacityBase: 0.015 + Math.random() * 0.03,
-          opacityAmp: 0.03 + Math.random() * 0.04
-        });
-      }
-    }
-    function createPhrase() {
-      const el = document.createElement('div');
-      el.className = 'ltc-phrase';
-      document.getElementById('page-clock').appendChild(el);
-      phraseObj = { el, x:0, y:0, vx:0, vy:0, phase:0 };
-      resetPhrase();
-    }
-    function resetPhrase() {
-      if (!phraseObj) return;
-      const el = phraseObj.el;
-      el.textContent = randomFrom(phrases);
-      el.style.fontSize = (16 + Math.random() * 22) + 'px';
-      const w = window.innerWidth, h = window.innerHeight - 80;
-      const pw = el.offsetWidth || 200, ph = el.offsetHeight || 60;
-      phraseObj.x = Math.random() * Math.max(10, w - pw - 20);
-      phraseObj.y = Math.random() * Math.max(10, h - ph - 20);
-      phraseObj.vx = (Math.random() * 0.8 + 0.25) * (Math.random() < 0.5 ? 1 : -1);
-      phraseObj.vy = (Math.random() * 0.8 + 0.25) * (Math.random() < 0.5 ? 1 : -1);
-      phraseObj.phase = 0;
-    }
-    function animate() {
-      const w = window.innerWidth, h = window.innerHeight - 80;
-      logos.forEach(logo => {
-        const el = logo.el;
-        const lw = el.offsetWidth, lh = el.offsetHeight;
-        logo.x += logo.vx; logo.y += logo.vy;
-        if (logo.x <= 0 || logo.x + lw >= w) logo.vx *= -1;
-        if (logo.y <= 0 || logo.y + lh >= h) logo.vy *= -1;
-        logo.phase += 0.01 + Math.random() * 0.008;
-        const fade = 0.5 + 0.5 * Math.sin(logo.phase);
-        el.style.opacity = logo.opacityBase + logo.opacityAmp * fade;
-        el.style.left = logo.x + 'px';
-        el.style.top = logo.y + 'px';
-      });
-      if (phraseObj) {
-        const el = phraseObj.el;
-        const pw = el.offsetWidth || 200, ph = el.offsetHeight || 60;
-        phraseObj.x += phraseObj.vx; phraseObj.y += phraseObj.vy;
-        if (phraseObj.x <= 0 || phraseObj.x + pw >= w) phraseObj.vx *= -1;
-        if (phraseObj.y <= 0 || phraseObj.y + ph >= h) phraseObj.vy *= -1;
-        phraseObj.phase += 0.01;
-        const fade = 0.5 + 0.5 * Math.sin(phraseObj.phase);
-        el.style.opacity = 0.12 + 0.35 * fade;
-        el.style.left = phraseObj.x + 'px';
-        el.style.top = phraseObj.y + 'px';
-        if (phraseObj.phase > Math.PI * 2) resetPhrase();
-      }
-      requestAnimationFrame(animate);
-    }
-    window.addEventListener('resize', () => {
-      logos.forEach(l => l.el.remove());
-      logos.length = 0;
-      createLogos();
-      resetPhrase();
-    });
-    createLogos();
-    createPhrase();
-    animate();
     document.getElementById('arrow-left').style.opacity = '0.3';
-    // Hide swipe hint on load if user has already visited Portfolio before
+    // Hide swipe hint on load if user has already visited another page
     if (localStorage.getItem('ltc_nav_hint_dismissed') === '1') {
       document.getElementById('swipe-hint').classList.add('hidden');
     }
