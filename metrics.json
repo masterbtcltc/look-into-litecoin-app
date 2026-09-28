@@ -1,16 +1,16 @@
 {
-  "updated": "2026-09-27T14:53:50.892791+00:00",
+  "updated": "2026-09-28T17:51:51.887743+00:00",
   "source": "https://bitinfocharts.com/",
   "btc": {
-    "tx_24h": 770806,
-    "median_usd": 44.11
+    "tx_24h": 807098,
+    "median_usd": 34.2
   },
   "ltc": {
-    "tx_24h": 165970,
-    "median_usd": 124.24
+    "tx_24h": 158461,
+    "median_usd": 108.11
   },
   "doge": {
-    "tx_24h": 20792,
-    "median_usd": 31.33
+    "tx_24h": 20807,
+    "median_usd": 40.53
   }
 }
